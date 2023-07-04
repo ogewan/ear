@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>App Time Tracker</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #fafafa;
+            font-family: Arial, sans-serif;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+        }
+
+        #app-list {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            width: 60%;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="openButton">Open Application</button>
+    <div id="app-list">
+        <h2>Opened Applications:</h2>
+        <!-- Applications will be dynamically inserted here -->
+    </div>
+    <script src="renderer.js"></script>
+</body>
+
+</html>

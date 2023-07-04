@@ -1,0 +1,19 @@
+{
+  "name": "electron-app-time-tracker",
+  "version": "1.0.0",
+  "description": "An Electron app to track runtime of applications",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "electron",
+    "node",
+    "time-tracker"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^14.0.0"
+  }
+}

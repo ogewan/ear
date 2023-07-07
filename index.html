@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html>
 
@@ -10,31 +9,36 @@
 
 <body>
     <h1>App Tracker</h1>
-    <button id="openButton">Open...</button>
-    <table id="app-list"></table>
+
+    <button id="openFile">Open Application</button>
+
+    <table id="appList">
+        <tr>
+            <th>Name</th>
+            <th>Runtime</th>
+            <th>Edit</th>
+            <th>Close</th>
+        </tr>
+    </table>
+
     <div id="editModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <form id="editForm">
-                <label for="displayName">Display Name</label>
-                <input type="text" id="displayName" name="displayName">
-
-                <label for="appPath">Path</label>
-                <input type="text" id="appPath" name="appPath">
-
-                <label for="parent">Parent</label>
-                <select id="parent" name="parent">
-                </select>
-
-                <label for="children">Children</label>
-                <select id="children" name="children" multiple>
-                </select>
-
-                <input type="submit" value="Save">
+                <label for="displayName">Display Name:</label><br>
+                <input type="text" id="displayName" name="displayName"><br>
+                <label for="appPath">Path:</label><br>
+                <input type="text" id="appPath" name="appPath"><br>
+                <label for="parent">Parent:</label><br>
+                <select id="parent" name="parent"></select><br>
+                <label for="children">Children:</label><br>
+                <select id="children" name="children" multiple></select><br>
+                <input type="submit" value="Submit">
             </form>
         </div>
     </div>
-    <script src="renderer.js"></script>
+
+    <script src="./renderer.js"></script>
 </body>
 
 </html>

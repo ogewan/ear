@@ -1,7 +1,7 @@
 # Node modules
 node_modules/
 
-apps.json
+apps.*
 *.old
 
 # Logs

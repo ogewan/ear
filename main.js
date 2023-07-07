@@ -1,34 +1,45 @@
-// Importing required modules
 const {app, BrowserWindow, dialog, ipcMain} = require('electron')
-const path = require('path')
-const fs = require('fs')
 
-let apps = []
-
-    // Load apps from file on startup
-    if (fs.existsSync('apps.json')) {
-  apps = JSON.parse(fs.readFileSync('apps.json'))
-}
-
-app.whenReady().then(() => {
-  // Create the browser window.
+function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true
-    }
+      nodeIntegration: true,  // Enable Node.js integration in renderer process
+      contextIsolation:
+          false,  // For IPC, you also need to disable contextIsolation
+    },
   })
 
-// Load the app's index.html file
   mainWindow.loadFile('index.html')
+}
+
+app.whenReady().then(() => {
+  createWindow()
+
+  app.on('activate', function () {
+  if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
 })
 
-ipcMain.handle('open-file-dialog', async (event) => {
-  const result = await dialog.showOpenDialog({
-    properties: ['openFile'],
+  app.on('window-all-closed', function() {
+    if (process.platform !== 'darwin') app.quit()
   })
-  return result.filePaths
-})
+
+  ipcMain.on(
+      'open-file-dialog',
+      (event, openApp) => {
+          dialog
+              .showOpenDialog({
+                properties: ['openFile'],
+                filters: [{name: 'Applications', extensions: ['exe', 'app']}]
+              })
+              .then(result => {
+                if (!result.canceled) {
+                  if (openApp)
+                    event.sender.send('open-app', result.filePaths[0]);
+                  else
+                    event.sender.send('save-path', result.filePaths[0]);
+                }
+              })
+              .catch(err => {console.log(err)})})

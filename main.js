@@ -26,20 +26,26 @@ app.whenReady().then(() => {
     if (process.platform !== 'darwin') app.quit()
   })
 
-  ipcMain.on(
-      'open-file-dialog',
-      (event, openApp) => {
-          dialog
-              .showOpenDialog({
-                properties: ['openFile'],
-                filters: [{name: 'Applications', extensions: ['exe', 'app']}]
-              })
-              .then(result => {
-                if (!result.canceled) {
-                  if (openApp)
-                    event.sender.send('open-app', result.filePaths[0]);
-                  else
-                    event.sender.send('save-path', result.filePaths[0]);
-                }
-              })
-              .catch(err => {console.log(err)})})
+  ipcMain.on('open-file-dialog', (event, control) => {
+    let type = control === 'pardir' ? {properties: ['openDirectory']} : {
+      properties: ['openFile'],
+      filters: [{name: 'Applications', extensions: ['exe', 'app']}]
+    };
+    dialog.showOpenDialog(type)
+        .then(result => {
+          if (!result.canceled) {
+            switch (control) {
+              case 'open':
+                event.sender.send('open-app', result.filePaths[0]);
+                break;
+              case 'save':
+                event.sender.send('save-path', result.filePaths[0]);
+                break;
+              case 'pardir':
+                event.sender.send('set-directory', result.filePaths[0]);
+                break;
+            }
+          }
+        })
+        .catch(err => {console.log(err)})
+  })

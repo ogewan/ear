@@ -10,7 +10,13 @@
 <body>
     <h1>App Tracker</h1>
 
+    <div id="tabContainer">
+        <button id="addTab">+</button>
+    </div>
+
+
     <button id="openFile">Open Application</button>
+    <button id="setDirectory">Set Directory</button>
 
     <table id="appList">
         <tr>
@@ -38,6 +44,16 @@
         </div>
     </div>
 
+    <!-- Add a modal for renaming a tab -->
+    <div id="renameTabModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="renameForm">
+                Tab Name: <input type="text" id="tabName" required>
+                <input type="submit" value="Rename">
+            </form>
+        </div>
+    </div>
     <script src="./renderer.js"></script>
 </body>
 

@@ -12,8 +12,8 @@ function createParentDropdown(appPath) {
   parentSelect.innerHTML = ''
 
   let parentOptionsAvailable = false;
-  for (let app in apps) {
-    if (app !== appPath && apps[app].parent === '') {
+  for (let app in apps.libraries[apps.current]) {
+    if (app !== appPath && lib[app].parent === '') {
       if (parentSelect.innerHTML === '') {
         const option = document.createElement('option');
         option.value = '';
@@ -23,14 +23,14 @@ function createParentDropdown(appPath) {
       parentOptionsAvailable = true;
       const option = document.createElement('option');
       option.value = app;
-      option.text = apps[app].name;
+      option.text = lib[app].name;
       parentSelect.appendChild(option)
     }
   }
-  if (apps[appPath].parent === '') {
+  if (lib[appPath].parent === '') {
     parentSelect.value = '';
   } else {
-    parentSelect.value = apps[appPath].parent;
+    parentSelect.value = lib[appPath].parent;
   }
 
   if (parentOptionsAvailable) {
@@ -45,14 +45,14 @@ function createChildrenDropdown(appPath) {
   childrenSelect.innerHTML = ''
 
   let childrenOptionsAvailable = false
-  for (let app in apps) {
+  for (let app in apps.libraries[apps.current]) {
     if (app !== appPath) {
       childrenOptionsAvailable = true
       const option = document.createElement('option')
       option.value = app;
-      option.text = apps[app].name;
+      option.text = lib[app].name;
       childrenSelect.appendChild(option);
-      if (apps[app].parent === appPath) {
+      if (lib[app].parent === appPath) {
         option.selected = true;
       }
     }
@@ -67,13 +67,13 @@ function createChildrenDropdown(appPath) {
 
 function openEditModal(appPath) {
   editedAppPath = appPath
-  document.getElementById('displayName').value = apps[appPath].name
+  document.getElementById('displayName').value = lib[appPath].name
   document.getElementById('appPath').value = appPath;
   document.getElementById('appPath').addEventListener('click', (event) => {
     event.stopImmediatePropagation();
     event.preventDefault();
     event.target.blur();
-    ipcRenderer.send('open-file-dialog');
+    ipcRenderer.send('open-file-dialog', 'save');
   });
 
 
@@ -96,7 +96,7 @@ window.onclick = function(event) {
 
 document.getElementById('editForm').addEventListener('submit', (event) => {
   event.preventDefault();
-  const old = apps[editedAppPath];
+  const old = lib[editedAppPath];
   const displayName = document.getElementById('displayName').value;
   const appPath = document.getElementById('appPath').value;
   const parent = document.getElementById('parent').value;
@@ -106,24 +106,25 @@ document.getElementById('editForm').addEventListener('submit', (event) => {
 
   old.name = displayName;
   if (appPath !== editedAppPath) {
-    apps[appPath] = old;
-    delete apps[editedAppPath];
+    lib[appPath] = old;
+    // delete lib[editedAppPath];
+    delete apps.libraries[apps.current][editedAppPath];
     editedAppPath = appPath;
   }
 
   // Move app to new parent and update children accordingly...
   if (parent !== '' && parent !== old.parent) {
     old.children.forEach(child => {
-      apps[child].parent = parent;
-      apps[parent].children.push(child);
+      lib[child].parent = parent;
+      lib[parent].children.push(child);
     });
     old.parent = parent;
     old.children = [];
   } else if (!compareArraysAsSets(children, old.children)) {
     children.forEach(child => {
-      const oldApp = apps[apps[child].parent];  // could be undefined
+      const oldApp = lib[lib[child].parent];  // could be undefined
       oldApp?.children.splice(1, oldApp?.children.indexOf(child));
-      apps[child].parent = editedAppPath;
+      lib[child].parent = editedAppPath;
       old.children.push(child);
     });
   }

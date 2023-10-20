@@ -3,6 +3,42 @@ body {
   font-family: Arial, sans-serif;
 }
 
+#tabContainer {
+  background-color: #333;
+  overflow: hidden;
+  white-space: pre;
+  display: flex;
+}
+
+#tabContainer div {
+  float: left;
+  border-right: 1px solid #bbb;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.tab {
+  cursor: pointer;
+}
+
+.tab-label, .tab-input {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+}
+
+.tab-input {
+    display: none;
+    border: 1px solid #ccc;
+}
+
 .modal {
   display: none;
   position: fixed;

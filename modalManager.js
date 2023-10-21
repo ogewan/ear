@@ -73,7 +73,9 @@ function openEditModal(appPath) {
     event.stopImmediatePropagation();
     event.preventDefault();
     event.target.blur();
-    ipcRenderer.send('open-file-dialog', 'save');
+    ipcRenderer.send(
+        'open-file-dialog',
+        {control: 'save', appPath: document.getElementById('appPath').value});
   });
 
 

@@ -1,4 +1,4 @@
-const {apps, openApp, processes, proxy_lib} = require('./appManager')
+const {apps, openApp, processes, proxy_lib, state} = require('./appManager')
 const {openEditModal} = require('./modalManager')
 const {msToTime} = require('./util')
 
@@ -21,18 +21,16 @@ function updateAppList() {
   for (let appPath in apps.libraries[apps.current]) {
     const app = lib[appPath];
     if (!app.parent) {
-      const existColor =
-          document.getElementById(appPath)?.style.getPropertyValue(
-              'background-color');
-      const isLastRan =
-          document.getElementById(appPath)?.classList.contains('lastRan');
       const row = document.createElement('tr');
       row.id = appPath;
-      if (existColor) {
-        row.style.setProperty('background-color', existColor);
+      if (state.lastFinished === appPath) {
+        row.style.setProperty('background-color', 'green');
       }
-      if (isLastRan) {
-        row.classList.add('lastRan');
+      if (state.running.has(appPath)) {
+        row.style.setProperty('background-color', 'yellow');
+      }
+      if (state.failed.has(appPath)) {
+        row.style.setProperty('background-color', 'red');
       }
 
       const nameCell = document.createElement('td');

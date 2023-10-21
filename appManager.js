@@ -6,6 +6,11 @@ const path = require('path');
 let version = 3;
 let apps = {};
 let processes = {};
+let state = {
+  lastFinished: '',
+  running: new Set(),
+  failed: new Set(),
+};
 const updateAppVersion = {
   1: (app) => {
     return {
@@ -86,23 +91,17 @@ function openApp(path) {
       writeApp();
       delete processes[path];
       // Last app closed (ran)
-      document.getElementById(path)?.style.setProperty(
-          'background-color', 'green');
-      document.getElementById(path)?.classList.add('lastRan');
+      state.lastFinished = path;
+      state.running.delete(path);
       // updateAppList();
     });
     // App opened and timing (started)
-    document.getElementById(path)?.style.setProperty(
-        'background-color', 'yellow');
-    const existGreen = document.body.querySelectorAll(`.lastRan`);
-    for (let node of existGreen) {
-      node.style.setProperty('background-color', 'white');
-      node.classList.remove('lastRan');
-    }
+    state.running.add(path);
+    state.failed.delete(path);
   } catch (err) {
     console.error(err);
     // App failed to open (failed)
-    document.getElementById(path)?.style.setProperty('background-color', 'red');
+    state.failed.add(path);
     return;
   }
 }
@@ -149,6 +148,7 @@ function moveDirectory(filePath, newFolderPath) {
 module.exports = {
   apps,
   processes,
+  state,
   openApp,
   proxy_lib,
   writeApp,

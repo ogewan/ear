@@ -20,7 +20,8 @@ document.getElementById('openFile').addEventListener('click', () => {
 
 document.getElementById('setDirectory').addEventListener('click', () => {
   console.log('setDirectory button clicked');
-  ipcRenderer.send('open-file-dialog', 'pardir');
+  ipcRenderer.send(
+      'open-file-dialog', {control: 'pardir', appPath: apps.parentDir});
 });
 
 document.getElementById('addTab').addEventListener('click', () => {

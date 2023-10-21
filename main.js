@@ -26,11 +26,16 @@ app.whenReady().then(() => {
     if (process.platform !== 'darwin') app.quit()
   })
 
-  ipcMain.on('open-file-dialog', (event, control) => {
-    let type = control === 'pardir' ? {properties: ['openDirectory']} : {
-      properties: ['openFile'],
-      filters: [{name: 'Applications', extensions: ['exe', 'app']}]
-    };
+  ipcMain.on('open-file-dialog', (event, args) => {
+    if (!args) return;
+    const {control, appPath} = args;
+    let type = control === 'pardir' ?
+        {properties: ['openDirectory'], defaultPath: appPath} :
+        {
+          properties: ['openFile'],
+          filters: [{name: 'Applications', extensions: ['exe', 'app']}],
+          defaultPath: appPath
+        };
     dialog.showOpenDialog(type)
         .then(result => {
           if (!result.canceled) {

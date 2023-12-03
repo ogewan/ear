@@ -15,7 +15,7 @@ ipcRenderer.on('set-directory', (event, path) => {
 
 document.getElementById('openFile').addEventListener('click', () => {
   console.log('openFile button clicked');
-  ipcRenderer.send('open-file-dialog', 'open');
+  ipcRenderer.send('open-file-dialog', { control: 'open' });
 });
 
 document.getElementById('setDirectory').addEventListener('click', () => {

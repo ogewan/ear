@@ -19,7 +19,8 @@ function createTable() {
       close.innerHTML = `<button class='close'>X</button>`
 
       // Create a child table if the app has children
-      if (apps[app].children.length > 0) {
+      const appChildren = Object.keys(apps[app].children)
+      if (appChildren.length > 0) {
         children.innerHTML = '<button class=\'expand\'>+</button>'
         const childTable = document.createElement('table')
         childTable.id = app + '-childTable'
@@ -30,7 +31,7 @@ function createTable() {
           if (event.target.innerHTML === '+') {
             event.target.innerHTML = '-'
             childTable.style.display = 'table'
-            createChildTable(apps[app].children, childTable)
+            createChildTable(appChildren, childTable)
           } else {
             event.target.innerHTML = '+'
             childTable.style.display = 'none'

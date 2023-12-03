@@ -20,6 +20,10 @@ function updateAppList() {
 
   for (let appPath in apps.libraries[apps.current]) {
     const app = lib[appPath];
+
+    if (!app.children) {
+      app.children = {};
+    }
     if (!app.parent) {
       const row = document.createElement('tr');
       row.id = appPath;
@@ -64,7 +68,8 @@ function updateAppList() {
       const totalCell = document.createElement('td');
       totalCell.innerText = msToTime(
           app.runtime +
-          app.children.reduce((acc, child) => acc + lib[child].runtime, 0));
+          Object.keys(app.children)
+              .reduce((acc, child) => acc + lib[child].runtime, 0));
 
 
       row.appendChild(nameCell);
@@ -74,6 +79,15 @@ function updateAppList() {
       row.appendChild(totalCell);
 
       appList.appendChild(row)
+    } else {
+      let parent = lib[app.parent];
+      while (parent.parent) {
+        parent = lib[parent.parent];
+      }
+      if (!parent.children) {
+        parent.children = {};
+      }
+      parent.children[appPath] = 1;
     }
   }
   // should garbage collect once out of scope

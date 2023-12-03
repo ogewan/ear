@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 // const {updateAppList} = require('./appListUpdater');
 
-let version = 3;
+let version = 5;
 let apps = {};
 let processes = {};
 let state = {
@@ -22,6 +22,49 @@ const updateAppVersion = {
   },
   2: (app) => {
     return {...app, parentDir: '', version};
+  },
+  3: (app) => {
+    const newApp = {...app, version};
+    // for every library, iterate through every app, and if that app has a
+    // parent, move all of its children to the parent. Additionally, convert the
+    // children array of every app to an object of children keys with empty
+    // values.
+    for (let library in newApp.libraries) {
+      for (let appKey in newApp.libraries[library]) {
+        let app = newApp.libraries[library][appKey];
+        // convert children array to object
+        app.children =
+            Object.fromEntries(app.children.map(child => [child, 1]));
+        const parent = app.parent;
+        if (parent) {
+          parent.children = {...parent.children, ...app.children};
+          app.children = {};
+        }
+      }
+    }
+    return newApp;
+  },
+  4: (app) => {
+    const newApp = {...app, version};
+    for (let library in newApp.libraries) {
+      for (let appKey in newApp.libraries[library]) {
+        let lib = newApp.libraries[library];
+        let app = lib[appKey];
+        // convert children array to object
+        delete app.children;
+        if (app.parent !== '') {
+          let ancestor = app.parent;
+          if (lib[ancestor]) {
+            while (lib[ancestor].parent !== '') {
+              ancestor = lib[ancestor].parent;
+            }
+          } else
+            ancestor = '';
+          app.parent = ancestor;
+        }
+      }
+    }
+    return newApp;
   }
 };
 
@@ -107,7 +150,12 @@ function openApp(path) {
 }
 
 function writeApp(data = apps) {
-  fs.writeFileSync('apps.json', JSON.stringify(data));
+  fs.writeFileSync('apps.json', JSON.stringify(data, (key, value) => {
+    if (key === 'children') {
+      return undefined
+    }
+    return value;
+  }, 4));
 }
 
 /**

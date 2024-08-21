@@ -1,4 +1,4 @@
-const {apps, openApp, processes, proxy_lib, state} = require('./appManager')
+const {apps, openApp, processes, proxy_lib, state} = require('./appManager.js')
 const {openEditModal} = require('./modalManager')
 const {msToTime} = require('./util')
 

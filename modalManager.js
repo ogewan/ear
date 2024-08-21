@@ -1,11 +1,12 @@
 const {app} = require('electron');
-const {apps, openApp} = require('./appManager')
+const {apps, openApp} = require('./appManager.js')
 const {msToTime} = require('./util')
 const fs = require('fs')
 
 const editModal = document.getElementById('editModal')
 const span = document.getElementsByClassName('close')[0];
 let editedAppPath;
+let appDir = `cfg/apps.json`;
 
 function createParentDropdown(appPath) {
   const parentSelect = document.getElementById('parent')
@@ -27,12 +28,11 @@ function createParentDropdown(appPath) {
       parentSelect.appendChild(option)
     }
   }
-  if (lib[appPath].parent === '') {
-    parentSelect.value = '';
+  if (lib[appPath]?.parent !== '') {
+    parentSelect.value = ''
   } else {
     parentSelect.value = lib[appPath].parent;
   }
-
   if (parentOptionsAvailable) {
     parentSelect.style.display = 'block'
   } else {
@@ -66,9 +66,11 @@ function createChildrenDropdown(appPath) {
 }
 
 function openEditModal(appPath) {
-  editedAppPath = appPath
-  document.getElementById('displayName').value = lib[appPath].name
-  document.getElementById('appPath').value = appPath;
+  if (appPath) {
+    editedAppPath = appPath
+    document.getElementById('displayName').value = lib[appPath].name
+    document.getElementById('appPath').value = appPath;
+  }
   document.getElementById('appPath').addEventListener('click', (event) => {
     event.stopImmediatePropagation();
     event.preventDefault();
@@ -77,8 +79,6 @@ function openEditModal(appPath) {
         'open-file-dialog',
         {control: 'save', appPath: document.getElementById('appPath').value});
   });
-
-
 
   createParentDropdown(appPath)
   createChildrenDropdown(appPath)
@@ -99,23 +99,27 @@ window.onclick = function(event) {
 document.getElementById('editForm').addEventListener('submit', (event) => {
   event.preventDefault();
   const old = lib[editedAppPath];
-  const displayName = document.getElementById('displayName').value;
-  const appPath = document.getElementById('appPath').value;
-  const parent = document.getElementById('parent').value;
+  const displayName = document.getElementById('displayName')?.value;
+  const appPath = document.getElementById('appPath')?.value;
+  const parent = document.getElementById('parent')?.value;
   const children =
       Array.from(document.getElementById('children').selectedOptions)
           .map(option => option.value);
 
-  old.name = displayName;
-  if (appPath !== editedAppPath) {
-    lib[appPath] = old;
-    // delete lib[editedAppPath];
-    delete apps.libraries[apps.current][editedAppPath];
+  if (old) old.name = displayName;
+  if (appPath && appPath !== editedAppPath) {
+    if (old) {
+      lib[appPath] = old;
+      // delete lib[editedAppPath];
+      delete apps.libraries[apps.current][editedAppPath];
+    } else {
+      openApp(appPath);
+    }
     editedAppPath = appPath;
   }
 
   // Move app to new parent and update children accordingly...
-  if (parent !== '' && parent !== old.parent) {
+  if (old && parent !== '' && parent !== old.parent) {
     apps.libraries[apps.current][editedAppPath]
     Object.keys(old.children).forEach(child => {
       lib[child].parent = parent;
@@ -123,14 +127,14 @@ document.getElementById('editForm').addEventListener('submit', (event) => {
     });
     old.parent = parent;
     old.children = {};
-  } else if (!compareObjects(children, old.children)) {
+  } else if (old && !compareObjects(children, old.children)) {
     old.children = Object.fromEntries(children.map(child => [child, 1]));
     Object.keys(old.children).forEach(child => {
       lib[child].parent = editedAppPath;
     });
   }
 
-  fs.writeFileSync('apps.json', JSON.stringify(apps))
+  fs.writeFileSync(appDir, JSON.stringify(apps))
   editModal.style.display = 'none'
 });
 

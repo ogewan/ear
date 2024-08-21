@@ -1,9 +1,14 @@
 const {spawn} = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const {ipcRenderer} = require('electron');
+// import {unpack} from require('node-unar');
 // const {updateAppList} = require('./appListUpdater');
+// const {unpack} = require('../node-unar/index.js');
+// console.log(unpack)
 
 let version = 5;
+let appDir = `cfg/apps.json`;
 let apps = {};
 let processes = {};
 let state = {
@@ -68,8 +73,8 @@ const updateAppVersion = {
   }
 };
 
-if (fs.existsSync('apps.json')) {
-  apps = updateAppFile(JSON.parse(fs.readFileSync('apps.json')));
+if (fs.existsSync(appDir)) {
+  apps = updateAppFile(JSON.parse(fs.readFileSync(appDir)));
 }
 
 const proxy_lib = new Proxy(apps, {
@@ -100,29 +105,36 @@ function updateAppFile(app) {
   return app;
 }
 
-function openApp(path) {
-  if (processes[path] || !path) {
+function openApp(filePath) {
+  if (processes[filePath] || !filePath) {
     return;
   }
+  const extension = path.extname(filePath).toLowerCase();
+
+  if (!['exe', 'app'].includes(extension)) {
+    // handleArchive(filePath, apps.stagingDir);
+    // return;
+  }
+
   const start = Date.now();
-  if (!lib[path]) {
-    lib[path] = {name: path, parent: '', children: [], runtime: 0};
+  if (!lib[filePath]) {
+    lib[filePath] = {name: filePath, parent: '', children: [], runtime: 0};
   }
   // updateAppList();
 
-  const newPath = moveDirectory(path, apps.parentDir);
-  if (newPath !== path) {
-    lib[newPath] = lib[path];
+  const newPath = moveDirectory(filePath, apps.parentDir);
+  if (newPath !== filePath) {
+    lib[newPath] = lib[filePath];
     // lib[newPath].name = newPath;
     // delete lib[path];
-    delete apps.libraries[apps.current][path];
-    path = newPath;
+    delete apps.libraries[apps.current][filePath];
+    filePath = newPath;
   }
 
   try {
-    fs.accessSync(path, fs.constants.F_OK);
-    const process = spawn(path);
-    processes[path] = process;
+    fs.accessSync(filePath, fs.constants.F_OK);
+    const process = spawn(filePath);
+    processes[filePath] = process;
 
     process.stdout.on('data', (data) => {console.log(`stdout: ${data}`)});
 
@@ -130,27 +142,27 @@ function openApp(path) {
 
     process.on('close', (code) => {
       const elapsed = Date.now() - start;
-      lib[path].runtime += elapsed;
+      lib[filePath].runtime += elapsed;
       writeApp();
-      delete processes[path];
+      delete processes[filePath];
       // Last app closed (ran)
-      state.lastFinished = path;
-      state.running.delete(path);
+      state.lastFinished = filePath;
+      state.running.delete(filePath);
       // updateAppList();
     });
     // App opened and timing (started)
-    state.running.add(path);
-    state.failed.delete(path);
+    state.running.add(filePath);
+    state.failed.delete(filePath);
   } catch (err) {
     console.error(err);
     // App failed to open (failed)
-    state.failed.add(path);
+    state.failed.add(filePath);
     return;
   }
 }
 
 function writeApp(data = apps) {
-  fs.writeFileSync('apps.json', JSON.stringify(data, (key, value) => {
+  fs.writeFileSync(appDir, JSON.stringify(data, (key, value) => {
     if (key === 'children') {
       return undefined
     }

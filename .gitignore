@@ -1,6 +1,7 @@
 # Node modules
 node_modules/
 
+cfg/
 apps.*
 *.old
 
@@ -40,3 +41,5 @@ build/
 
 # Mac files
 .DS_Store
+
+*.vndata

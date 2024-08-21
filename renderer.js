@@ -1,6 +1,7 @@
 const {ipcRenderer} = require('electron')
-const {apps, processes, openApp, proxy_lib, writeApp} = require('./appManager')
-// const {openEditModal} = require('./modalManager')
+const {apps, processes, openApp, proxy_lib, writeApp} =
+    require('./appManager.js')
+const {openEditModal} = require('./modalManager')
 const {updateAppList} = require('./appListUpdater')
 const {updateTabs, switchToTab} = require('./library')
 
@@ -13,15 +14,22 @@ ipcRenderer.on('set-directory', (event, path) => {
   writeApp();
 });
 
+document.getElementById('quickOpen').addEventListener('click', () => {
+  console.log('quickOpen button clicked');
+  openEditModal();
+});
+
 document.getElementById('openFile').addEventListener('click', () => {
   console.log('openFile button clicked');
-  ipcRenderer.send('open-file-dialog', { control: 'open' });
+  ipcRenderer.send(
+      'open-file-dialog', {control: 'open', staging: apps.stagingDir});
 });
 
 document.getElementById('setDirectory').addEventListener('click', () => {
   console.log('setDirectory button clicked');
   ipcRenderer.send(
-      'open-file-dialog', {control: 'pardir', appPath: apps.parentDir});
+      'open-file-dialog',
+      {control: 'pardir', appPath: apps.parentDir, staging: apps.stagingDir});
 });
 
 document.getElementById('addTab').addEventListener('click', () => {

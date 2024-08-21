@@ -1,6 +1,6 @@
 const {createTable} = require('./tableManager');
 const {updateAppList} = require('./appListUpdater');
-const {apps, writeApp} = require('./appManager');
+const {apps, writeApp} = require('./appManager.js');
 
 function updateTabs() {
   const tabContainer = document.getElementById('tabContainer');

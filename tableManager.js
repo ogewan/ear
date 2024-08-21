@@ -1,4 +1,4 @@
-const {apps, openApp, openEditModal} = require('./appManager')
+const {apps, openApp, openEditModal} = require('./appManager.js')
 const {msToTime} = require('./util')
 
 function createTable() {

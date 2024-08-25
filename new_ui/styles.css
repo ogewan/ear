@@ -1,0 +1,150 @@
+/* styles.css */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1b1b1b;
+    color: #ffffff;
+}
+
+#app {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    flex-direction: column;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.logo {
+    margin-right: auto; /* Aligns the logo to the left */
+    padding: 0 10px; /* Optional padding */
+}
+
+.top-bar {
+    background-color: #2a2a2a;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-bar .menu-options {
+    display: flex;
+    list-style: none;
+}
+
+.top-bar .menu-options li {
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.left-bar {
+    background-color: #232323;
+    padding: 10px;
+    width: 250px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.left-bar input[type="text"] {
+    padding: 5px;
+    margin-bottom: 10px;
+    background-color: #3a3a3a;
+    border: none;
+    color: white;
+}
+
+.left-bar .filter-button {
+    padding: 5px;
+    margin-bottom: 20px;
+    background-color: #3a3a3a;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.left-bar .game-list {
+    list-style: none;
+    padding: 0;
+}
+
+.left-bar .game-list li {
+    padding: 5px 0;
+    cursor: pointer;
+}
+
+.main-content {
+    padding: 10px;
+    flex-grow: 1;
+    background-color: #1b1b1b;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.tile {
+    background-color: #2a2a2a;
+    padding: 10px;
+    position: relative;
+}
+
+.tile .title {
+    margin-bottom: 10px;
+}
+
+.tile .actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.tile .actions button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 5px;
+    display: none;
+}
+
+.modal.show {
+    display: block;
+}
+
+.modal .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.modal table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.modal table, .modal th, .modal td {
+    border: 1px solid #3a3a3a;
+}
+
+.modal th, .modal td {
+    padding: 10px;
+    text-align: center;
+}

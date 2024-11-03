@@ -43,6 +43,13 @@ body {
     cursor: pointer;
 }
 
+/* Highlight items on hover */
+.top-bar .menu-options li:hover,
+.left-bar .game-list li:hover {
+    background-color: #3a3a3a;
+    color: #ffffff;
+}
+
 .left-bar {
     background-color: #232323;
     padding: 10px;
@@ -77,6 +84,9 @@ body {
 .left-bar .game-list li {
     padding: 5px 0;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .main-content {
@@ -86,6 +96,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 10px;
+    grid-auto-rows: min-content;
 }
 
 .tile {
